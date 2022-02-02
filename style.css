@@ -1,0 +1,15 @@
+* {
+    color: black;
+    font-size: 16px;
+}
+
+table {
+    /*border-collapse: collapse;
+    width: 500px;
+    height: 300px;
+    */
+}
+
+td {
+    border: 1px solid red;
+}
