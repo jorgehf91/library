@@ -22,9 +22,6 @@ let addBookToLibrary = () => {
     if (myLibrary.length == 0) {
         bookCount = 0;
     } 
-    else if (myLibrary.length == 1) {
-        bookCount = 1;
-    }
     else {
         bookCount = myLibrary.length;
     }
@@ -45,11 +42,7 @@ let addBookToLibrary = () => {
     let isReadForm = prompt('have you read the book? (yes/no format): ').toLowerCase();
     if(isReadForm == null || isReadForm.length <=0 ){
         return 
-    }
-    // else if (isReadForm !== 'yes' || isReadForm !== 'no' ) {
-    //     return
-    // }
-    
+    } 
 
     newBook = Object.create(Book.prototype);
     
@@ -57,26 +50,15 @@ let addBookToLibrary = () => {
     newBook.author = authorForm;
     newBook.pages = pagesForm;
     newBook.read = isReadForm;
-    newBook.uniqueId = bookCount + 1;
+    newBook.uniqueId = bookCount;
     
     myLibrary.push(newBook);
     console.log('bookCount before:', bookCount)
-    
-    ++bookCount;
 
     console.log('bookCount after:', bookCount)
 
     addBookToTable(newBook.uniqueId);
 }
-
-// const book1 = new Book('Paradise Lost', 'John Milton', 509, true, 0, 1)
-// bookCount++;
-// const book2 = new Book('Rayuela', 'Julio Cortazar', 453, false, 1)
-// const book3 = new Book('The Three-Body Problem', 'Cixin Liu', 408, true, 2)
-
-//myLibrary.push(book1);
-// myLibrary.push(book2);
-// myLibrary.push(book3);
 
 let table = document.querySelector('table');
 table.style.border = '1px solid black';
@@ -105,64 +87,42 @@ function addBookToTable(bookId){
 
         var toggleReadButton = document.createElement('button')
         toggleReadButton.id = bookCount;
-       
+        toggleReadButton.className = 'read-button'
         toggleReadButton.textContent = 'Change read status';
     
-        tTitle.textContent = `Book Title: ${myLibrary[bookId - 1].title}`;
-        tAuthor.textContent = `Author: ${myLibrary[bookId - 1].author}`;
-        tPages.textContent = `Number of pages: ${myLibrary[bookId - 1].pages}`;
-        tRead.textContent = `Is the book have been read?: ${myLibrary[bookId - 1].read}`;
+        tTitle.textContent = `Book Title: ${myLibrary[bookId].title}`;
+        tAuthor.textContent = `Author: ${myLibrary[bookId].author}`;
+        tPages.textContent = `Number of pages: ${myLibrary[bookId].pages}`;
+        tRead.textContent = `Is the book have been read?: ${myLibrary[bookId].read}`;
         removeButton.textContent = 'Remove';
-
 
         removeButton.addEventListener('click', (e) => {
             myLibrary.splice(e.target, 1);
-            console.log('bookcount: ', bookCount)
-            console.log('click')
-            console.log('e.target.id: ', e.target.id)
-            e.target.parentElement.remove()
+            e.target.parentElement.remove();
 
+            //This re-assigns the id's of the toggleButtons
+            let listBooks = document.querySelectorAll('.read-button')
+            
+            for (let i = 0; i < listBooks.length; i++) {
+                listBooks[i].id = i;
+                console.log('book id: ', i)
+            }
         })
 
 
         toggleReadButton.addEventListener('click', (e) => {
-            console.log('e.target.whatever: ' , e.target.parentElement.children[3])
-            console.log('id of toggle button: ', e.target.id)
 
-            let currentBook;
+            let elemIdToIndex = parseInt(String(e.target.id))
+            let currentBook = myLibrary[elemIdToIndex];
+            var currentReadElem = e.target.parentElement.children[3] //targets the text
 
-            if (myLibrary.length == 0) {
-                console.log('first condition met, myLibrary has zero objects')
-                currentBook = myLibrary[e.target.id- 1];
-
-                var currentReadElem = e.target.parentElement.children[3]
- 
-                if (currentBook.read === 'yes') { 
+            if (currentBook.read === 'yes') { 
                 currentBook.read = 'no';
-                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[e.target.id - 1].read}`;
-                } else {
-                currentBook.read = 'yes';
-                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[e.target.id - 1].read}`;
-                }
-
+                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[elemIdToIndex].read}`;
             } else {
-                console.log('else condition met, myLibrary has objects')
-                currentBook = myLibrary[e.target.id]
-
-                var currentReadElem = e.target.parentElement.children[3]
- 
-                if (currentBook.read === 'yes') { 
-                currentBook.read = 'no';
-                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[e.target.id - 1].read}`;
-                } else {
                 currentBook.read = 'yes';
-                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[e.target.id - 1].read}`;
-                }
+                currentReadElem.textContent = `Is the book have been read?: ${myLibrary[elemIdToIndex].read}`;
             }
-
-            //console.log('currentBook: ', currentBook)
-
-            
         })
     
         table.appendChild(newRow);
@@ -173,12 +133,5 @@ function addBookToTable(bookId){
         newRow.appendChild(tRead);
         newRow.appendChild(removeButton);
         newRow.appendChild(toggleReadButton);
-}
-
-
-// Add a button on each book’s display to change its read status.
-// To facilitate this you will want to create the function that toggles a book’s read 
-// status on your Book prototype instance.
-
-
-
+        ++bookCount;
+} //end of addBookToTable function
